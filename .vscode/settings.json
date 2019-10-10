@@ -1,0 +1,11 @@
+{
+    "python.pythonPath": "/home/vladislav/.local/share/virtualenvs/training-q2jBOI6X/bin/python",
+    "python.linting.enabled": true,
+    "eslint.autoFixOnSave": true,
+    "eslint.options": {
+        "configFile": "/home/vladislav/Projects/vinhood/frontend/.eslintrc.js"
+    },
+    "javascript.format.enable": false,
+    "editor.tabSize": 4,
+    "python.formatting.provider": "black",
+}

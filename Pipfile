@@ -22,12 +22,14 @@ pytest-django = "*"
 pytest-xdist = "*"
 pytest-factoryboy = "*"
 pytest-mock = "*"
+shell-plus = "*"
 
 [packages]
 Django = "==2.2.3"
 django-environ = "*"
 django-extensions = "*"
 psycopg2-binary = "*"
+graphene-django = "*"
 
 [requires]
 python_version = "3.7"
