@@ -3,6 +3,13 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 
+class Trainer(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
 class User(AbstractUser):
     """
     Set User model.
@@ -19,6 +26,9 @@ class User(AbstractUser):
     )
     user_code = models.CharField(_("User code"), max_length=10, blank=True)
     user_text = models.TextField(_("User text"), blank=True)
+    trainer = models.ForeignKey(
+        Trainer, related_name="users", on_delete=models.SET_NULL, blank=True, null=True
+    )
 
     class Meta:
         """
