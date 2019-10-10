@@ -7,6 +7,9 @@ from django.conf import settings
 
 import pytest
 
+from apps.users.factories import TrainerFactory, UserFactory
+from pytest_factoryboy import register
+
 
 @pytest.fixture(scope="session", autouse=True)
 def remove_tempdir(request):
@@ -18,3 +21,7 @@ def remove_tempdir(request):
             shutil.rmtree(settings.MEDIA_ROOT)
 
     request.addfinalizer(fin)
+
+
+register(UserFactory)
+register(TrainerFactory)

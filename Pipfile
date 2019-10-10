@@ -30,6 +30,7 @@ django-environ = "*"
 django-extensions = "*"
 psycopg2-binary = "*"
 graphene-django = "*"
+pytest-factoryboy = "*"
 
 [requires]
 python_version = "3.7"
