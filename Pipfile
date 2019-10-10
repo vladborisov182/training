@@ -24,7 +24,7 @@ pytest-factoryboy = "*"
 pytest-mock = "*"
 
 [packages]
-Django = "==2.2.3"
+Django = "==2.2.4"
 django-environ = "*"
 django-extensions = "*"
 psycopg2-binary = "*"
