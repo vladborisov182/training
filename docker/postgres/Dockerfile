@@ -1,0 +1,3 @@
+FROM postgres:11.2
+
+HEALTHCHECK CMD pg_isready -U $POSTGRES_USER

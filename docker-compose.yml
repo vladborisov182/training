@@ -1,0 +1,66 @@
+version: '3.2'
+
+volumes:
+  postgres_data:
+  redis_data:
+
+services:
+
+  postgres:
+    container_name: ${PROJECT_NAME}_postgres
+    image: ${PROJECT_NAME}_postgres
+    command: -c fsync=off -c synchronous_commit=off -c full_page_writes=off
+    restart: always
+    build: ./docker/postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${PROJECT_NAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DOCKER_POSTGRES_PORT}:5432"
+    networks:
+      - default
+
+  redis:
+    container_name: ${PROJECT_NAME}_redis
+    image: ${PROJECT_NAME}_redis
+    restart: always
+    build:
+      context: ./docker/redis/
+    volumes:
+      - redis_data:/data
+    networks:
+      - default
+    ports:
+      - "${DOCKER_REDIS_PORT}:6379"
+
+  backend:
+    container_name: ${PROJECT_NAME}_backend
+    image: ${PROJECT_NAME}_backend
+    build: ./docker/python
+    restart: always
+    ports:
+      - "${DOCKER_BACKEND_PORT}:8000"
+    working_dir: /usr/src/app
+    environment:
+      - DJANGO_DEBUG=True
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${PROJECT_NAME}
+      - ALLOWED_HOSTS=*
+      - DJANGO_SECRET_KEY=notsafeforproduction
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - default
+    command: /bin/bash -c "PIPENV_DONT_LOAD_ENV=1 pipenv install --system --deploy && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - postgres
+      - redis
+
+networks:
+  default:
+    ipam:
+      driver: default
