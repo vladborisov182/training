@@ -10,7 +10,15 @@ class User(AbstractUser):
     This model is inherited from default user model.
     """
 
+    COMMON, RARE = 1, 2
+    USER_TYPES = ((COMMON, _("Common user")), (RARE, _("Rare")))
+
     email = models.EmailField(_("Email address"), unique=True)
+    user_type = models.PositiveSmallIntegerField(
+        _("User type"), choices=USER_TYPES, default=COMMON
+    )
+    user_code = models.CharField(_("User code"), max_length=10, blank=True)
+    user_text = models.TextField(_("User text"), blank=True)
 
     class Meta:
         """
