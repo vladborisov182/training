@@ -34,7 +34,7 @@ class UserQuery(object):
 
 class TrainerQuery(object):
     all_trainers = graphene.List(TrainerType)
-    all_trainers_users = graphene.List(UserType)git 
+    all_trainers_users = graphene.List(UserType)
 
     def resolve_all_trainers(self, info, **kwargs):
         return Trainer.objects.all()
