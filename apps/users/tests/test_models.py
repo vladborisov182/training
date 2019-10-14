@@ -69,3 +69,47 @@ class TestModels(GraphQLTestCase):
 
         self.assertEqual(set(all_users_user_names), set(retuned_users_user_names))
         self.assertEqual(len(all_users_user_names), len(retuned_users_user_names))
+
+    def test_get_user_by_id(self):
+        user = UserFactory()
+
+        response = self.query(
+            """
+            query allUsers($id: Int!){
+                user(id: $id) {
+                    id
+                }
+            }
+            """,
+            op_name="allUsers",
+            variables={"id": user.id},
+        )
+        self.assertResponseNoErrors(response)
+
+        content = json.loads(response.content)
+        returned_user = content["data"]["user"]
+
+        self.assertEqual(len(returned_user), 1)
+        self.assertEqual(int(returned_user["id"]), user.id)
+
+    def test_get_user_by_username(self):
+        user = UserFactory()
+
+        response = self.query(
+            """
+            query allUsers($username: String!){
+                user(username: $username) {
+                    username
+                }
+            }
+            """,
+            op_name="allUsers",
+            variables={"username": user.username},
+        )
+        self.assertResponseNoErrors(response)
+
+        content = json.loads(response.content)
+        returned_user = content["data"]["user"]
+
+        self.assertEqual(len(returned_user), 1)
+        self.assertEqual(returned_user["username"], user.username)
