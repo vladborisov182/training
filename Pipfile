@@ -6,7 +6,6 @@ verify_ssl = true
 [dev-packages]
 factory_boy = "*"
 coverage = "*"
-ipdb = "*"
 ipython = "*"
 isort = "*"
 jedi = "*"
@@ -32,6 +31,7 @@ django-extensions = "*"
 psycopg2-binary = "*"
 graphene-django = "*"
 pytest-factoryboy = "*"
+django-filter = "*"
 
 [requires]
 python_version = "3.7"
