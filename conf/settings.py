@@ -60,8 +60,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-GRAPHENE = {"SCHEMA": "schema.schema"}
-
 ROOT_URLCONF = "conf.urls"
 
 TEMPLATES = [

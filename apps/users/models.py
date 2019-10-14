@@ -27,7 +27,11 @@ class User(AbstractUser):
     user_code = models.CharField(_("User code"), max_length=10, blank=True)
     user_text = models.TextField(_("User text"), blank=True)
     trainer = models.ForeignKey(
-        Trainer, related_name="users", on_delete=models.SET_NULL, blank=True, null=True
+        to="users.Trainer",
+        related_name="users",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
 
     class Meta:

@@ -23,6 +23,7 @@ pytest-xdist = "*"
 pytest-factoryboy = "*"
 pytest-mock = "*"
 shell-plus = "*"
+ipdb = "*"
 
 [packages]
 Django = "==2.2.3"
