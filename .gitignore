@@ -77,8 +77,6 @@ __pycache__/
 media/
 static/
 db/
-quiz_data_processing/
-quiz_path_file
 logs/
 pids/
 static_content/
@@ -87,7 +85,7 @@ SCSS_CACHE/
 pylint_*
 node_modules/
 .vscode/
+.pytest_cache/
 include/python3.6m
 pip-selfcheck.json
 .~lock*
-vinhood_apps/quiz_tests/quiz_data_processing/data/*.json
