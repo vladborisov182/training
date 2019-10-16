@@ -1,8 +1,7 @@
 import pytest
 from graphene.test import Client
 
-from apps.users.factories import TrainerFactory, UserFactory
-from apps.users.models import Trainer, User
+from apps.users.models import User
 from conf.schema import schema
 
 pytestmark = pytest.mark.django_db
@@ -17,148 +16,120 @@ def test_user_str_method():
     assert str(User(email="email@email.com")) == "email@email.com"
 
 
-def test_get_list_of_trainers(schema_client):
-    trainers_list = TrainerFactory.create_batch(3)
+def test_get_list_of_trainers(schema_client, user_factory, trainer_factory):
+    trainers_list = trainer_factory.create_batch(3)
     for trainer in trainers_list:
-        UserFactory.create_batch(2, trainer=trainer)
+        user_factory.create_batch(2, trainer=trainer)
 
     response_content = schema_client.execute(
         """
         query {
             allTrainers {
-                edges {
-                    node {
-                        id,
-                        name
-                        users {
-                            edges {
-                                node {
-                                    username
-                                }
-                            }
-                        }
-                    }
+                id
+                name
+                users {
+                    id
                 }
             }
         }
-        """,
-        op_name="Trainer",
+        """
     )
     assert not response_content.get("errors")
 
-    returned_trainers = response_content["data"]["allTrainers"]["edges"]
+    returned_trainers = response_content["data"]["allTrainers"]
     all_trainers_names = [x.name for x in trainers_list]
-    retuned_trainers_names = [x["node"]["name"] for x in returned_trainers]
+    retuned_trainers_names = [x["name"] for x in returned_trainers]
 
     assert set(all_trainers_names) == set(retuned_trainers_names)
     assert len(all_trainers_names) == len(retuned_trainers_names)
 
     for trainer in returned_trainers:
-        assert len(trainer["node"]["users"]["edges"]) == 2
+        assert len(trainer["users"]) == 2
 
 
-def test_get_all_users(schema_client):
-    users = UserFactory.create_batch(5)
+def test_get_all_users(schema_client, user_factory):
+    users = user_factory.create_batch(5)
 
     response_content = schema_client.execute(
         """
         query {
             allUsers {
-                edges {
-                    node {
-                        username
-                    }
-                }
+                username
             }
         }
-        """,
-        op_name="User",
+        """
     )
     assert not response_content.get("errors")
 
-    returned_users = response_content["data"]["allUsers"]["edges"]
+    returned_users = response_content["data"]["allUsers"]
     all_users_user_names = [x.username for x in users]
-    retuned_users_user_names = [x["node"]["username"] for x in returned_users]
+    retuned_users_user_names = [x["username"] for x in returned_users]
 
     assert set(all_users_user_names) == set(retuned_users_user_names)
     assert len(all_users_user_names) == len(retuned_users_user_names)
 
 
-def test_get_user_by_id(schema_client):
-    user = UserFactory()
+def test_get_user_by_id(schema_client, user_factory):
+    user = user_factory()
 
     response_content = schema_client.execute(
-        f"""
-        query{{
-            allUsers(id: {user.id}) {{
-                edges {{
-                    node {{
-                        username
-                    }}
-                }}
-            }}
-        }}
+        """
+            query user($id: Int!){
+                user(id: $id) {
+                    id
+                    username
+                }
+            }
         """,
-        op_name="allUsers",
+        variables={"id": user.id},
     )
     assert not response_content.get("errors")
 
-    returned_user = response_content["data"]["allUsers"]["edges"]
+    returned_user = response_content["data"]
 
     assert len(returned_user) == 1
-    assert returned_user[0]["node"]["username"] == user.username
+    assert returned_user["user"]["username"] == user.username
 
 
-def test_get_user_by_username(schema_client):
-    user = UserFactory()
+def test_get_trainer_by_id(schema_client, trainer_factory):
+    trainer = trainer_factory()
 
     response_content = schema_client.execute(
-        f"""
-        query{{
-            allUsers(username: "{user.username}") {{
-                edges {{
-                    node {{
-                        username
-                    }}
-                }}
-            }}
-        }}
+        """
+            query trainer($id: Int!){
+                trainer(id: $id) {
+                    id
+                    name
+                }
+            }
         """,
-        op_name="allUsers",
+        variables={"id": trainer.id},
     )
     assert not response_content.get("errors")
 
-    returned_user = response_content["data"]["allUsers"]["edges"]
+    returned_user = response_content["data"]
 
     assert len(returned_user) == 1
-    assert returned_user[0]["node"]["username"] == user.username
+    assert returned_user["trainer"]["name"] == trainer.name
 
 
-def test_trainers_by_name(schema_client):
-    trainers = TrainerFactory.create_batch(5)
+def test_get_trainer_by_name(schema_client, trainer_factory):
+    trainer = trainer_factory()
 
-    for trainer in trainers:
-        trainer_name = trainer.name
-        response_content = schema_client.execute(
-            f"""
-            query{{
-                allTrainers(name_Icontains: "{trainer_name}") {{
-                    edges {{
-                        node {{
-                            name
-                        }}
-                    }}
-                }}
-            }}
-            """,
-            op_name="allTrainers",
-        )
-        assert not response_content.get("errors")
+    response_content = schema_client.execute(
+        """
+            query trainer($name: String!){
+                trainer(name: $name) {
+                    name
+                    name
+                }
+            }
+        """,
+        variables={"name": trainer.name},
+    )
+    assert not response_content.get("errors")
 
-        returned_trainers = response_content["data"]["allTrainers"]["edges"]
+    returned_user = response_content["data"]
 
-        assert (
-            len(returned_trainers)
-            == Trainer.objects.filter(name__icontains=trainer_name).count()
-        )
-        assert returned_trainers[0]["node"]["name"] == trainer_name
+    assert len(returned_user) == 1
+    assert returned_user["trainer"]["name"] == trainer.name
